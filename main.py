@@ -2,18 +2,27 @@ import pyrogram
 from pyrogram import Client, filters
 from pyrogram.errors import UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 import time
 import os
 import threading
-from config import Config
+import json
 
-bot = Client("myBot", api_id=Config.API_ID,
-             api_hash=Config.API_HASH, bot_token=Config.BOT_TOKEN)
+with open('config.json', 'r') as f:
+    DATA = json.load(f)
 
 
-if Config.STRING_SESSION is not None:
-    acc = Client("myacc", api_id=Config.API_ID,
-                 api_hash=Config.API_HASH, session_string=Config.STRING_SESSION)
+def getenv(var): return os.environ.get(var) or DATA.get(var, None)
+
+
+bot_token = getenv("TOKEN")
+api_hash = getenv("HASH")
+api_id = getenv("ID")
+bot = Client("mybot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
+
+ss = getenv("STRING")
+if ss is not None:
+    acc = Client("myacc", api_id=api_id, api_hash=api_hash, session_string=ss)
     acc.start()
 else:
     acc = None
